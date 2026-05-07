@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI SmartCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h1 class="logo">SMART<span>CART</span></h1>
+            <div class="bill-container">
+                <h3>Total Bill</h3>
+                <h2 id="total-price">$0.00</h2>
+            </div>
+            <div id="item-list" class="item-list">
+                </div>
+            <button onclick="resetCart()" class="reset-btn">Reset Cart</button>
+        </div>
+        <div class="main-view">
+            <img src="{{ url_for('video_feed') }}" class="stream-img">
+        </div>
+    </div>
+
+    <script>
+        function updateCart() {
+            fetch('/get_cart')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('total-price').innerText = `$${data.total.toFixed(2)}`;
+                    const list = document.getElementById('item-list');
+                    list.innerHTML = data.items.map(item => `<div class="item-entry">${item}</div>`).join('');
+                });
+        }
+        function resetCart() {
+            fetch('/reset').then(() => updateCart());
+        }
+        setInterval(updateCart, 1000); // Update bill every second
+    </script>
+</body>
+</html>
